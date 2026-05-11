@@ -1,0 +1,32 @@
+[package]
+name = "locus-demo"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "End-to-end CLI: pull Solana wallet behavior, embed into ARMS, query with on-chain attestations."
+
+[[bin]]
+name = "locus-demo"
+path = "src/main.rs"
+
+[dependencies]
+locus-client = { path = "../locus-client" }
+
+tokio = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+clap = { workspace = true }
+dotenvy = { workspace = true }
+sha2 = { workspace = true }
+hex = { workspace = true }
+chrono = { workspace = true }
+
+anchor-lang = { workspace = true }
+solana-sdk = { workspace = true }
+
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }

@@ -1,0 +1,22 @@
+[package]
+name = "locus"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Locus: Solana protocol for verifiable AI memory commitments and pay-per-query retrieval attestations on top of ARMS."
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "locus"
+
+[features]
+default = []
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+idl-build = ["anchor-lang/idl-build"]
+
+[dependencies]
+anchor-lang = { workspace = true, features = ["init-if-needed"] }

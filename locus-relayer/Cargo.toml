@@ -1,0 +1,33 @@
+[package]
+name = "locus-relayer"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+description = "Watches ARMS state and commits memory roots to the Locus program on Solana."
+
+[[bin]]
+name = "locus-relayer"
+path = "src/main.rs"
+
+[dependencies]
+locus-client = { path = "../locus-client" }
+
+tokio = { workspace = true }
+reqwest = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+sha2 = { workspace = true }
+rs_merkle = { workspace = true }
+hex = { workspace = true }
+clap = { workspace = true }
+dotenvy = { workspace = true }
+
+anchor-lang = { workspace = true }
+solana-sdk = { workspace = true }
+
+anyhow = { workspace = true }
+thiserror = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+chrono = { workspace = true }

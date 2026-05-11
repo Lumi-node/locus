@@ -1,0 +1,50 @@
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock.bak
+
+# Anchor / Solana
+.anchor/
+test-ledger/
+.crates/
+*.so
+node_modules/
+yarn.lock
+package-lock.json
+
+# Local keys (NEVER commit)
+*.json
+!Anchor.toml
+!package.json
+!tsconfig.json
+!tests/**/*.json
+!.vscode/*.json
+keys/
+deploy-keypair.json
+authority.json
+**/wallets/*.json
+
+# Data caches (regenerable)
+data/wallets.json
+data/tx_cache/
+data/embeddings/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts
+dist/
+build/
+*.log
