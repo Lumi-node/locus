@@ -43,9 +43,19 @@ Behavioral similarity result (query wallet was Bubblegum-heavy → neighbors are
 
 ---
 
-## Pitch video — auto-generated, narrated
+## Pitch video — generated end-to-end with local AI
 
-The 3:00 pitch video lives at [`demo/locus-pitch-final.mp4`](demo/locus-pitch-final.mp4). The whole thing is reproducible from this repo:
+The 3:00 pitch video lives at [`demo/locus-pitch-final.mp4`](demo/locus-pitch-final.mp4). Every frame and every word was produced locally on an RTX 5090 — no cloud TTS, no stock footage, no human voiceover. Real Solscan footage for the on-chain proof, real ARMS paper figures for the visuals, real Qwen3-TTS narration for the voice. We ship AI with AI.
+
+| | |
+|---|---|
+| **Visual recording** | Playwright (chromium, 1920×1080) — drives a self-paced HTML deck and live `explorer.solana.com` navigation |
+| **Voice narration** | [Qwen3-TTS-12Hz-1.7B-CustomVoice](https://huggingface.co/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice) (1.7B params, local, ~4.3 GB) with per-section emotion instruct |
+| **Figures** | Real ARMS paper figures from [Lumi-node/ARMS](https://github.com/Lumi-node/ARMS) (DOI on Zenodo) |
+| **On-chain proof** | Real `https://explorer.solana.com/` pages — every tx + account decoded live during recording |
+| **Audio post** | ffmpeg `loudnorm I=-16 LUFS` for broadcast-level output |
+
+Reproducible from this repo:
 
 ```bash
 # 1. record the 6-section pitch deck at 1080p (3:02 webm)
