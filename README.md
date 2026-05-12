@@ -43,6 +43,25 @@ Behavioral similarity result (query wallet was Bubblegum-heavy → neighbors are
 
 ---
 
+## Pitch video — auto-generated, narrated
+
+The 3:00 pitch video lives at [`demo/locus-pitch-final.mp4`](demo/locus-pitch-final.mp4). The whole thing is reproducible from this repo:
+
+```bash
+# 1. record the 6-section pitch deck at 1080p (3:02 webm)
+npx playwright install chromium
+npx playwright test scripts/demo-solscan.spec.ts
+
+# 2. synthesize TTS narration (edge-tts, neural voice, auto-paced per segment)
+pip install --user edge-tts
+python3 scripts/generate-narration.py
+
+# 3. mux narration onto the recording, output a YouTube-ready MP4
+./scripts/mux-demo.sh
+```
+
+Each section's narration text + timing window lives in [`demo/narration.json`](demo/narration.json) — edit + re-run to retune voice, pacing, or copy.
+
 ## 30-second demo
 
 ```bash

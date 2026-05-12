@@ -29,6 +29,11 @@ data/wallets.json
 data/tx_cache/
 data/embeddings/
 
+# Playwright recordings + per-segment TTS clips (regenerable; final MP4 IS committed)
+demo-recordings/
+demo/audio/
+test-results/
+
 # Env / secrets
 .env
 .env.*
@@ -48,3 +53,4 @@ Thumbs.db
 dist/
 build/
 *.log
+node_modules/
