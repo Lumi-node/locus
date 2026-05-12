@@ -1,0 +1,50 @@
+{
+  "voice": "en-US-GuyNeural",
+  "rate": "+0%",
+  "pitch": "+0Hz",
+  "_notes": "Voices to try: en-US-GuyNeural (calm M), en-US-DavisNeural (warm M), en-US-JennyNeural (clear F), en-US-AriaNeural (newsy F). Adjust rate (+/-15%) to fit each segment to its window.",
+  "segments": [
+    {
+      "id": "s1",
+      "start_sec": 0,
+      "duration_sec": 20,
+      "title": "Problem",
+      "text": "Solana agents are stateless. The Agent Payments Protocol launched this quarter. Agents are trading, voting, and coordinating on-chain — and none of them have persistent, verifiable memory. Every block, they start over."
+    },
+    {
+      "id": "s2",
+      "start_sec": 20,
+      "duration_sec": 25,
+      "title": "Insight",
+      "text": "Memory isn't a database problem. It's a coordinate problem. Position is relationship. Things you retrieve together should live near each other in space — and that geometry should be cryptographically committable."
+    },
+    {
+      "id": "s3",
+      "start_sec": 45,
+      "duration_sec": 30,
+      "title": "ARMS",
+      "text": "I've spent the past six months building ARMS — a spatial memory fabric in Rust. The retrieval algorithm, called HAT, hits one hundred percent recall at seventy times faster build than HNSW. The productized version gives local language models over eleven million tokens of context at half a millisecond latency. It's open source. It has a DOI. The models are on HuggingFace."
+    },
+    {
+      "id": "s4",
+      "start_sec": 75,
+      "duration_sec": 30,
+      "title": "Locus",
+      "text": "Locus is the Solana protocol on top. Memory roots committed on-chain. Pay-per-query in SOL. Every retrieval produces a cryptographic attestation — query hash, result hash, root, version — recorded as a Solana account. Now every AI-driven on-chain action has an audit trail of which memories shaped it."
+    },
+    {
+      "id": "s5",
+      "start_sec": 105,
+      "duration_sec": 45,
+      "title": "Proof",
+      "text": "I embedded a sample of Solana wallets into ARMS using behavioral features — program interactions, token holdings, transaction patterns. You can query for wallets similar to any address, and every query produces a live on-chain attestation: the agent that owns the memory, the requester who paid the fee, the cryptographic hashes of the query and the result. This is on Solana devnet right now. Every link in the README opens a real Solscan account or transaction."
+    },
+    {
+      "id": "s6",
+      "start_sec": 150,
+      "duration_sec": 30,
+      "title": "Vision and Ask",
+      "text": "Every Solana agent needs memory. We're the memory primitive. The same infrastructure that powers wallet similarity today will power agent persistence tomorrow, governance reasoning the day after, and the audit layer for autonomous trading after that. ARMS is independent AI research with real benchmarks. Locus turns it into Solana infrastructure. I'm looking for accelerator placement to ship mainnet and onboard the first ten agent teams."
+    }
+  ]
+}
