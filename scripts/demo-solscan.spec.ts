@@ -59,8 +59,8 @@ test('Locus pitch — hybrid slides + live devnet (3:00)', async ({ page }) => {
   await page.evaluate(() => window.scrollBy({ top: 500, behavior: 'smooth' }));
   await beat(3_000);
 
-  // Phase C — resume demo.html at section 6 (2:30 → 3:00)
+  // Phase C — resume demo.html at section 6 (2:30 → 3:05, gives Qwen3 narration room)
   await page.goto(`${DEMO}?seek=150`);
   await page.waitForSelector('#s6.live', { timeout: 5_000 });
-  await beat(31_000);
+  await beat(35_000);
 });

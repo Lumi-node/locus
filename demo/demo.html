@@ -13,7 +13,6 @@
     -webkit-font-smoothing: antialiased;
   }
   body::before {
-    /* slow ambient gradient */
     content: ""; position: fixed; inset: -20%; z-index: -1;
     background: radial-gradient(ellipse at 30% 20%, rgba(124,196,255,.08), transparent 50%),
                 radial-gradient(ellipse at 70% 80%, rgba(95,212,126,.05), transparent 50%);
@@ -28,69 +27,92 @@
     position: absolute; inset: 0;
     display: flex; flex-direction: column;
     align-items: center; justify-content: center;
-    padding: 5vh 8vw;
+    padding: 4vh 6vw;
     opacity: 0; pointer-events: none;
     transition: opacity 600ms ease;
   }
   .stage.live { opacity: 1; pointer-events: auto; }
+
   .eyebrow {
     text-transform: uppercase; letter-spacing: .35em;
-    font-size: 14px; color: #6d83a3; margin-bottom: 24px;
+    font-size: 13px; color: #6d83a3; margin-bottom: 18px;
     font-weight: 500;
   }
   h1 {
-    font-size: 84px; line-height: 1.02; font-weight: 700;
+    font-size: 72px; line-height: 1.04; font-weight: 700;
     max-width: 18ch; text-align: center; letter-spacing: -.03em;
     color: #f4f7fb;
   }
   h2 {
-    font-size: 48px; line-height: 1.08; font-weight: 600;
-    max-width: 20ch; text-align: center; letter-spacing: -.02em;
+    font-size: 44px; line-height: 1.1; font-weight: 600;
+    max-width: 22ch; text-align: center; letter-spacing: -.02em;
     color: #e8edf2;
   }
   .sub {
-    font-size: 26px; color: #a5b6cd; margin-top: 28px;
-    max-width: 30ch; text-align: center; line-height: 1.4;
-    font-weight: 400;
+    font-size: 22px; color: #a5b6cd; margin-top: 22px;
+    max-width: 36ch; text-align: center; line-height: 1.4;
   }
   .accent { color: #7cc4ff; }
   .mono { font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace; }
 
-  .stats { display: flex; gap: 64px; margin-top: 56px; }
+  /* Split layout — image on one side, text on the other */
+  .split {
+    display: grid;
+    grid-template-columns: 1.05fr .95fr;
+    gap: 6vw;
+    width: 100%; max-width: 1640px;
+    align-items: center;
+    margin-top: 24px;
+  }
+  .split.reverse { grid-template-columns: .95fr 1.05fr; }
+  .split .text-col { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+  .split .text-col h1, .split .text-col h2, .split .text-col p { text-align: left; }
+  .split .img-col {
+    border-radius: 14px; overflow: hidden;
+    box-shadow: 0 30px 80px rgba(0,0,0,.5);
+    border: 1px solid rgba(124,196,255,.18);
+    background: #0f1422;
+  }
+  .split .img-col img { display: block; width: 100%; height: auto; }
+
+  /* Stats — used in s3 */
+  .stats { display: flex; gap: 36px; margin-top: 28px; flex-wrap: wrap; }
   .stat { display: flex; flex-direction: column; align-items: center; }
   .stat-num {
-    font-size: 72px; font-weight: 700; color: #7cc4ff;
+    font-size: 52px; font-weight: 700; color: #7cc4ff;
     letter-spacing: -.02em; line-height: 1;
     font-variant-numeric: tabular-nums;
   }
   .stat-label {
-    font-size: 14px; color: #6d83a3; margin-top: 12px;
+    font-size: 12px; color: #6d83a3; margin-top: 8px;
     text-transform: uppercase; letter-spacing: .2em;
   }
 
+  /* Architecture boxes — s4 */
   .arch {
-    display: grid; grid-template-columns: 1fr auto 1fr; gap: 40px;
-    align-items: center; margin-top: 48px; font-family: "JetBrains Mono", monospace;
-    font-size: 20px;
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 28px;
+    align-items: center; margin-top: 32px;
+    font-family: "JetBrains Mono", monospace; font-size: 18px;
+    width: 100%; max-width: 1100px;
   }
   .arch-box {
     border: 1px solid #2a3a52; background: #111726;
-    padding: 28px 32px; border-radius: 12px;
-    text-align: center; min-width: 280px;
+    padding: 24px 28px; border-radius: 12px;
+    text-align: center;
     opacity: 0; transform: translateY(20px);
     animation: pop 600ms ease forwards;
   }
   #s4.live .arch-box:nth-child(1) { animation-delay: 800ms; }
   #s4.live .arch-box:nth-child(3) { animation-delay: 1600ms; }
   @keyframes pop { to { opacity: 1; transform: translateY(0); } }
-  .arch-box .title { color: #7cc4ff; font-weight: 600; font-size: 22px; }
-  .arch-box .body { color: #a5b6cd; margin-top: 12px; font-size: 15px; line-height: 1.5; }
+  .arch-box .title { color: #7cc4ff; font-weight: 600; font-size: 20px; }
+  .arch-box .body { color: #a5b6cd; margin-top: 10px; font-size: 14px; line-height: 1.5; }
   .arrow {
-    color: #4a5d7a; font-size: 36px; font-weight: 200;
+    color: #4a5d7a; font-size: 32px;
     opacity: 0; animation: pop 600ms ease 1200ms forwards;
   }
 
-  /* Terminal */
+  /* Terminal — s5 */
   .term-wrap {
     width: 82vw; max-width: 1400px;
     border-radius: 12px;
@@ -111,12 +133,12 @@
     font-size: 13px;
   }
   .term-body {
-    padding: 24px 28px;
+    padding: 22px 28px;
     font-family: "JetBrains Mono", ui-monospace, monospace;
-    font-size: 17px; line-height: 1.55;
+    font-size: 16px; line-height: 1.55;
     color: #a5b6cd;
-    min-height: 380px;
-    max-height: 60vh; overflow: hidden;
+    min-height: 340px;
+    max-height: 56vh; overflow: hidden;
   }
   .term-body .prompt { color: #5fd47e; margin-right: 8px; }
   .term-body .cmd { color: #e8edf2; }
@@ -125,33 +147,16 @@
   .term-body .warn { color: #f4c674; }
   .term-body .dim { color: #4a5d7a; }
   .term-body .line { opacity: 0; animation: termIn 250ms ease forwards; }
-
   @keyframes termIn { to { opacity: 1; } }
-
-  /* attestation card */
-  .att-card {
-    width: 82vw; max-width: 1300px;
-    border: 1px solid #2a3a52; background: #0f1422;
-    border-radius: 14px; padding: 24px 32px; margin-top: 24px;
-    font-family: "JetBrains Mono", monospace; font-size: 15px;
-    opacity: 0; transform: translateY(10px);
-    transition: opacity 500ms ease, transform 500ms ease;
-  }
-  .att-card.show { opacity: 1; transform: translateY(0); }
-  .att-card .row { display: grid; grid-template-columns: 220px 1fr; gap: 16px; padding: 8px 0; }
-  .att-card .row + .row { border-top: 1px solid #1c2436; }
-  .att-card .k { color: #6d83a3; }
-  .att-card .v { color: #e8edf2; word-break: break-all; }
-  .att-card .v .lbl { color: #7cc4ff; font-weight: 600; }
 
   .badge {
     display: inline-flex; gap: 8px; align-items: center;
     background: rgba(124,196,255,.08);
     border: 1px solid rgba(124,196,255,.25);
     color: #7cc4ff; padding: 6px 14px;
-    border-radius: 999px; font-size: 13px;
+    border-radius: 999px; font-size: 12px;
     text-transform: uppercase; letter-spacing: .14em;
-    font-weight: 500; margin-bottom: 24px;
+    font-weight: 500; margin-bottom: 18px;
   }
   .dot-pulse {
     width: 8px; height: 8px; border-radius: 50%;
@@ -161,8 +166,8 @@
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
 
   .footnote {
-    position: absolute; bottom: 3vh; left: 0; right: 0;
-    text-align: center; color: #3d4d68; font-size: 12px;
+    position: absolute; bottom: 2vh; left: 0; right: 0;
+    text-align: center; color: #3d4d68; font-size: 11px;
     letter-spacing: .15em; text-transform: uppercase;
     font-family: "JetBrains Mono", monospace;
   }
@@ -178,13 +183,14 @@
     font-size: 13px; letter-spacing: .1em;
   }
 
-  /* fade utilities — each section's child elements appear sequentially */
   .fi { opacity: 0; transform: translateY(8px); animation: fi 700ms ease forwards; }
   @keyframes fi { to { opacity: 1; transform: translateY(0); } }
 
-  .pulse-link {
-    color: #7cc4ff;
-    text-shadow: 0 0 16px rgba(124,196,255,.4);
+  /* gentle ken-burns zoom for hero images */
+  .ken { animation: ken 18s ease-in-out infinite alternate; }
+  @keyframes ken {
+    0%   { transform: scale(1) translate(0, 0); }
+    100% { transform: scale(1.04) translate(-1%, 1%); }
   }
 </style>
 </head>
@@ -201,27 +207,41 @@
   <p class="sub fi" style="animation-delay:8s;">None of them have persistent, verifiable, queryable memory.<br/>Every block, they start over.</p>
 </div>
 
-<!-- =============== s2 INSIGHT 0:20 - 0:45 =============== -->
+<!-- =============== s2 INSIGHT 0:20 - 0:45 (image left, text right) =============== -->
 <div class="stage" data-start="20" data-end="45" id="s2">
   <div class="badge fi"><span class="dot-pulse"></span><span>Section 2 / 6 · The Insight</span></div>
-  <h1 class="fi" style="animation-delay:.2s;">Memory isn't a<br/>database problem.</h1>
-  <h2 class="fi accent" style="animation-delay:4s;margin-top:36px;">It's a coordinate problem.</h2>
-  <p class="sub fi" style="animation-delay:9s;">Things you retrieve together should live near each other in space — and that geometry should be cryptographically committable.</p>
+  <div class="split">
+    <div class="img-col fi" style="animation-delay:.3s;">
+      <img class="ken" src="images/position_is_relationship.jpg" alt="Position IS Relationship — semantic similarity is spatial proximity" />
+    </div>
+    <div class="text-col">
+      <h1 class="fi" style="animation-delay:.5s;font-size:60px;">Memory isn't a<br/>database problem.</h1>
+      <h2 class="fi accent" style="animation-delay:4s;margin-top:24px;font-size:38px;">It's a coordinate problem.</h2>
+      <p class="sub fi" style="animation-delay:10s;text-align:left;max-width:32ch;">Things you retrieve together should live near each other in space — and that geometry should be cryptographically committable.</p>
+    </div>
+  </div>
 </div>
 
-<!-- =============== s3 ARMS 0:45 - 1:15 =============== -->
+<!-- =============== s3 ARMS 0:45 - 1:15 (image left, text right + stats below) =============== -->
 <div class="stage" data-start="45" data-end="75" id="s3">
   <div class="badge fi"><span class="dot-pulse"></span><span>Section 3 / 6 · ARMS</span></div>
-  <p class="eyebrow fi" style="animation-delay:.2s;">Attention Reasoning Memory Store</p>
-  <h1 class="fi" style="animation-delay:.6s;">A spatial memory fabric<br/>for AI systems.</h1>
-  <p class="sub fi" style="animation-delay:3s;">Six months of research. Rust. Open source. <em>Position is relationship.</em></p>
-  <div class="stats">
-    <div class="stat fi" style="animation-delay:6s;"><div class="stat-num" data-target="100" data-suffix="%">0%</div><div class="stat-label">recall (HAT)</div></div>
-    <div class="stat fi" style="animation-delay:7s;"><div class="stat-num" data-target="70" data-suffix="×">0×</div><div class="stat-label">faster build vs HNSW</div></div>
-    <div class="stat fi" style="animation-delay:8s;"><div class="stat-num" data-target="11" data-suffix="M+">0M+</div><div class="stat-label">tokens of context</div></div>
-    <div class="stat fi" style="animation-delay:9s;"><div class="stat-num" data-target="0.51" data-suffix="ms" data-decimals="2">0.00ms</div><div class="stat-label">retrieval latency</div></div>
+  <div class="split">
+    <div class="img-col fi" style="animation-delay:.3s;">
+      <img class="ken" src="images/arms_architecture.jpg" alt="ARMS spatial memory fabric architecture — Point, Proximity, Merge, Place, Near" />
+    </div>
+    <div class="text-col">
+      <p class="eyebrow fi" style="animation-delay:.4s;">Attention Reasoning Memory Store</p>
+      <h1 class="fi" style="animation-delay:.8s;font-size:54px;">A spatial memory fabric for AI systems.</h1>
+      <p class="sub fi" style="animation-delay:3s;text-align:left;max-width:32ch;">Six months of research. Rust. Open source. <em class="accent">Position is relationship.</em></p>
+      <div class="stats">
+        <div class="stat fi" style="animation-delay:6s;"><div class="stat-num" data-target="100" data-suffix="%">0%</div><div class="stat-label">recall (HAT)</div></div>
+        <div class="stat fi" style="animation-delay:7s;"><div class="stat-num" data-target="70" data-suffix="×">0×</div><div class="stat-label">faster build vs HNSW</div></div>
+        <div class="stat fi" style="animation-delay:8s;"><div class="stat-num" data-target="11" data-suffix="M+">0M+</div><div class="stat-label">tokens of context</div></div>
+        <div class="stat fi" style="animation-delay:9s;"><div class="stat-num" data-target="0.51" data-suffix="ms" data-decimals="2">0.00ms</div><div class="stat-label">retrieval latency</div></div>
+      </div>
+      <p class="sub fi mono" style="animation-delay:20s;margin-top:24px;font-size:14px;color:#6d83a3;text-align:left;">DOI on Zenodo · HuggingFace · ORCID 0009-0002-3685-4289</p>
+    </div>
   </div>
-  <p class="sub fi" style="animation-delay:18s;margin-top:36px;">DOI on Zenodo · models on HuggingFace · <span class="mono">ORCID 0009-0002-3685-4289</span></p>
 </div>
 
 <!-- =============== s4 LOCUS 1:15 - 1:45 =============== -->
@@ -239,15 +259,13 @@
       <div class="body">Pay-per-query in SOL,<br/>cryptographic attestation</div>
     </div>
   </div>
-  <p class="sub fi" style="animation-delay:6s;margin-top:48px;">Every AI-driven on-chain action now has an audit trail of which memories shaped it.</p>
-  <p class="sub fi mono" style="animation-delay:14s;color:#6d83a3;font-size:18px;">query_hash · result_hash · memory_root · version · requester · fee</p>
+  <p class="sub fi" style="animation-delay:6s;margin-top:36px;">Every AI-driven on-chain action now has an audit trail of which memories shaped it.</p>
+  <p class="sub fi mono" style="animation-delay:14s;color:#6d83a3;font-size:16px;">query_hash · result_hash · memory_root · version · requester · fee</p>
 </div>
 
 <!-- =============== s5 PROOF — LIVE 1:45 - 2:10 (animated terminal) =============== -->
-<!-- Section ends at 130 so Playwright can navigate to real Solscan for the back half (2:10-2:30) -->
 <div class="stage" data-start="105" data-end="130" id="s5">
   <div class="badge fi"><span class="dot-pulse"></span><span>Section 5 / 6 · Proof — Live on Solana Devnet</span></div>
-
   <div class="term-wrap fi" style="animation-delay:.2s;">
     <div class="term-bar">
       <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
@@ -257,33 +275,34 @@
   </div>
 </div>
 
-<!-- =============== s6 VISION + ASK 2:30 - 3:00 =============== -->
-<div class="stage" data-start="150" data-end="180" id="s6">
+<!-- =============== s6 VISION + ASK 2:30 - 3:05 (image right, text left) =============== -->
+<div class="stage" data-start="150" data-end="185" id="s6">
   <div class="badge fi"><span class="dot-pulse"></span><span>Section 6 / 6 · Vision + Ask</span></div>
-  <h1 class="fi" style="animation-delay:.2s;">Every Solana agent<br/>needs memory.</h1>
-  <h2 class="fi" style="animation-delay:3s;margin-top:32px;">We're the <span class="accent">primitive.</span></h2>
-  <p class="sub fi" style="animation-delay:9s;max-width:42ch;">
-    Wallet similarity today · agent persistence tomorrow ·<br/>
-    governance reasoning + autonomous-trading audit, after.
-  </p>
-  <p class="sub fi accent" style="animation-delay:18s;margin-top:36px;">
-    Looking for accelerator placement to ship mainnet<br/>and onboard the first ten agent teams.
-  </p>
-  <p class="sub fi mono" style="animation-delay:24s;font-size:18px;color:#7cc4ff;">github.com/Lumi-node/locus</p>
+  <div class="split reverse">
+    <div class="text-col">
+      <h1 class="fi" style="animation-delay:.2s;font-size:60px;">Every Solana agent<br/>needs memory.</h1>
+      <h2 class="fi" style="animation-delay:3s;margin-top:22px;font-size:38px;">We're the <span class="accent">primitive.</span></h2>
+      <p class="sub fi" style="animation-delay:9s;text-align:left;max-width:36ch;">
+        Wallet similarity today · agent persistence tomorrow · governance reasoning + autonomous-trading audit, after.
+      </p>
+      <p class="sub fi accent" style="animation-delay:18s;text-align:left;max-width:36ch;font-size:22px;">
+        Looking for accelerator placement to ship mainnet and onboard the first ten agent teams.
+      </p>
+      <p class="sub fi mono" style="animation-delay:26s;font-size:16px;color:#7cc4ff;text-align:left;">github.com/Lumi-node/locus</p>
+    </div>
+    <div class="img-col fi" style="animation-delay:.6s;">
+      <img class="ken" src="images/arms_ecosystem.jpg" alt="ARMS ecosystem — the memory primitive across AI systems" />
+    </div>
+  </div>
 </div>
 
 <div class="footnote">LOCUS · SOLANA FRONTIER HACKATHON · COLOSSEUM 2026</div>
 
 <script>
-  // ----------------------------------------------------------------------
-  // Top-level timeline
-  // ----------------------------------------------------------------------
   const stages = Array.from(document.querySelectorAll('.stage'));
   const bar = document.getElementById('bar');
   const ts = document.getElementById('ts');
-  const TOTAL = 180;
-  // ?seek=N offsets t0 backwards so the auto-advance starts at second N.
-  // Used when Playwright navigates away (to real Solscan) then back to resume.
+  const TOTAL = 185;
   const seek = Number(new URLSearchParams(location.search).get('seek') || 0);
   const t0 = performance.now() - seek * 1000;
   let activated = new Set();
@@ -294,7 +313,7 @@
   function tick() {
     const elapsed = (performance.now() - t0) / 1000;
     bar.style.width = Math.min(100, (elapsed / TOTAL) * 100) + '%';
-    ts.textContent = `${fmt(elapsed)} / 03:00`;
+    ts.textContent = `${fmt(elapsed)} / 03:05`;
 
     let activeId = null;
     for (const s of stages) {
@@ -306,7 +325,7 @@
       const isLive = s.id === activeId;
       if (isLive && !wasLive) {
         s.classList.add('live');
-        onStageEnter(s, elapsed);
+        onStageEnter(s);
       } else if (!isLive && wasLive) {
         s.classList.remove('live');
       }
@@ -315,23 +334,19 @@
   }
   requestAnimationFrame(tick);
 
-  function onStageEnter(stage, elapsedAtEntry) {
+  function onStageEnter(stage) {
     if (activated.has(stage.id)) return;
     activated.add(stage.id);
     if (stage.id === 's3') animateCounters(stage);
     if (stage.id === 's5') runTerminal();
   }
 
-  // ----------------------------------------------------------------------
-  // s3 — count-up stat numbers
-  // ----------------------------------------------------------------------
   function animateCounters(stage) {
     const nums = stage.querySelectorAll('.stat-num');
     nums.forEach((el, i) => {
       const target = +el.dataset.target;
       const suffix = el.dataset.suffix || '';
       const decimals = +(el.dataset.decimals || 0);
-      // start animation 6.5s into the section so it aligns with stat-card fade-in
       const startDelay = 6000 + i * 700;
       setTimeout(() => {
         const dur = 1400;
@@ -349,16 +364,9 @@
     });
   }
 
-  // ----------------------------------------------------------------------
-  // s5 — animated terminal playback
-  // ----------------------------------------------------------------------
   function runTerminal() {
     const term = document.getElementById('terminal');
-    const card = document.getElementById('attCard');
     if (!term) return;
-
-    // Timeline (relative to stage entry). Section is ~25s long; remaining
-    // 20s of the proof block is real Solscan footage (Playwright navigates away).
     const timeline = [
       { at: 200,  type: 'prompt' },
       { at: 200,  type: 'type', cls: 'cmd', text: 'cargo run -p locus-demo -- similar --wallet 1tjoQzWg21…7km --k 5', dur: 1500 },
@@ -382,7 +390,6 @@
     ];
 
     let cursorLine = null;
-
     for (const ev of timeline) {
       setTimeout(() => {
         switch (ev.type) {
@@ -411,10 +418,6 @@
             ln.textContent = ev.text;
             term.appendChild(ln);
             scroll(term);
-            break;
-          }
-          case 'card': {
-            card.classList.add('show');
             break;
           }
         }

@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
-"""High-energy founder pitch narration via Qwen3-TTS-VoiceDesign (1.7B, 4.3GB).
+"""High-energy founder pitch narration via Qwen3-TTS-CustomVoice (1.7B, 4.3GB).
 
-The VoiceDesign variant of Qwen3-TTS takes a natural-language `instruct` field
-that controls timbre, emotion, and prosody. We use it to ask for an
-*enthusiastic* delivery — the antidote to CSM-1B's flat podcast tone.
+Uses the named speaker "ryan" (young American male) so the voice stays
+consistent across all 6 sections. The `instruct` field tunes emotion/prosody
+per section — building tension early, peaking on the proof, conviction at close.
 
 Outputs:
-    demo/audio/qwen3_s1.wav … qwen3_s6.wav   (sample rate from model)
-    demo/audio/narration_track.mp3           (concatenated, padded to 180s)
+    demo/audio/qwen3_s1.wav … qwen3_s6.wav
+    demo/audio/narration_track.mp3
 """
 from __future__ import annotations
 
@@ -27,27 +27,17 @@ SPEC = ROOT / "demo" / "narration.json"
 OUT = ROOT / "demo" / "audio"
 OUT.mkdir(parents=True, exist_ok=True)
 
-MODEL_PATH = "/media/lumi-node/Storage2/AI-Research-Lab/models/repository/other/Qwen/Qwen3-TTS-12Hz-1.7B-VoiceDesign"
+MODEL_PATH = "/media/lumi-node/Storage2/AI-Research-Lab/models/repository/other/Qwen/Qwen3-TTS-12Hz-1.7B-CustomVoice"
+SPEAKER = "ryan"  # young American male, available in CustomVoice preset library
 
-# Per-section voice instructions. Same speaker character throughout, but tuned
-# for emotional fit: building tension early, peaking at proof, calm-confident close.
-VOICE_INSTRUCTIONS = {
-    "s1": "An energetic young American male tech founder, mid-30s, opening a Solana hackathon pitch. "
-          "Confident, slightly urgent, leaning into the problem. Clear articulation, varied intonation, "
-          "no monotony. American English, broadcast quality.",
-    "s2": "Same male founder, hitting the key insight. Tone shifts to thoughtful and emphatic — like "
-          "he's delivering the big idea. Slow down on key phrases like 'coordinate problem' and "
-          "'cryptographically committable'. American English, expressive.",
-    "s3": "Same male founder, talking about his year of research. Confident, slightly proud, "
-          "matter-of-fact when reciting benchmark numbers. Brisker pace. American English.",
-    "s4": "Same male founder, technical explanation mode. Crisp, articulate, slightly faster. "
-          "Each clause lands cleanly. American English, natural cadence.",
-    "s5": "Same male founder, demoing on stage. ENERGETIC and proud, peaks of excitement on "
-          "'live right now' and 'real decoded'. Like he's showing off something he just shipped. "
-          "American English, high-energy founder voice.",
-    "s6": "Same male founder, closing the pitch. Confident, conviction-laden, slightly slower for "
-          "the final ask. The 'looking for accelerator placement' line should sound deliberate "
-          "and ambitious. American English, conviction over volume.",
+# Per-section emotion / pacing — voice character stays the same.
+INSTRUCTIONS = {
+    "s1": "Open the pitch with energy and urgency. Confident, leaning into the problem. Brisk pace.",
+    "s2": "Slow down for emphasis on the key insight. Thoughtful, deliberate, lands the big idea.",
+    "s3": "Confident and slightly proud, reciting research benchmarks matter-of-factly. Brisk pace.",
+    "s4": "Crisp and articulate, technical explanation mode. Each clause lands cleanly. Natural cadence.",
+    "s5": "ENERGETIC and proud, like demoing on stage. Peaks of excitement on 'live right now' and 'real decoded'.",
+    "s6": "Closing the pitch. Conviction-laden, slightly slower, deliberate on the final ask. Ambitious tone.",
 }
 
 
@@ -65,11 +55,7 @@ def main() -> None:
     segs = spec["segments"]
 
     print(f"loading {MODEL_PATH}")
-    print(f"  cuda available: {torch.cuda.is_available()}")
-    if torch.cuda.is_available():
-        free, total = torch.cuda.mem_get_info()
-        print(f"  vram free: {free / 1024**3:.1f} GB / {total / 1024**3:.1f} GB")
-
+    print(f"speaker: {SPEAKER}")
     model = Qwen3TTSModel.from_pretrained(
         MODEL_PATH,
         device_map="cuda:0" if torch.cuda.is_available() else "cpu",
@@ -80,15 +66,16 @@ def main() -> None:
     seg_paths: list[tuple[dict, Path]] = []
     for seg in segs:
         sid = seg["id"]
-        instruct = VOICE_INSTRUCTIONS[sid]
+        instruct = INSTRUCTIONS[sid]
         text = seg["text"]
         print(f"\n── {sid} {seg['title']} ({seg['duration_sec']}s) ──")
-        print(f"  instruct: {instruct[:90]}…")
+        print(f"  instruct: {instruct}")
         print(f"  text:     {text[:90]}…")
-        wavs, sr = model.generate_voice_design(
+        wavs, sr = model.generate_custom_voice(
             text=text,
+            speaker=SPEAKER,
             instruct=instruct,
-            language="English",
+            language="english",
             do_sample=True,
             temperature=0.85,
             top_p=0.95,
@@ -102,7 +89,7 @@ def main() -> None:
         print(f"  → {out.name}  {dur:.2f}s @ {sr}Hz")
         seg_paths.append((seg, out))
 
-    # Concat with padding to align with timeline.
+    # Concat with silence padding so each segment lands in its window.
     work = OUT / "_work_qwen3"
     if work.exists():
         shutil.rmtree(work)
@@ -124,7 +111,6 @@ def main() -> None:
             )
             pieces.append(sil)
 
-    # Use ffmpeg concat-protocol; sample-rate-mismatch tolerated via decoder.
     list_file = work / "concat.txt"
     with list_file.open("w") as f:
         for p in pieces:
