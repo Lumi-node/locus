@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Locus — pitch (≤2 min)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    width: 100vw; height: 100vh; overflow: hidden;
+    background: #0a0e1a; color: #e8edf2;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: ""; position: fixed; inset: -20%; z-index: -1;
+    background: radial-gradient(ellipse at 30% 20%, rgba(124,196,255,.08), transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(95,212,126,.05), transparent 50%);
+  }
+  .stage {
+    position: absolute; inset: 0;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    padding: 4vh 6vw;
+    opacity: 0; pointer-events: none;
+    transition: opacity 600ms ease;
+  }
+  .stage.live { opacity: 1; pointer-events: auto; }
+  .badge {
+    display: inline-flex; gap: 8px; align-items: center;
+    background: rgba(124,196,255,.08);
+    border: 1px solid rgba(124,196,255,.25);
+    color: #7cc4ff; padding: 6px 14px;
+    border-radius: 999px; font-size: 12px;
+    text-transform: uppercase; letter-spacing: .14em;
+    font-weight: 500; margin-bottom: 22px;
+  }
+  .dot-pulse {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #5fd47e; box-shadow: 0 0 8px #5fd47e;
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
+
+  h1 { font-size: 72px; line-height: 1.04; font-weight: 700; max-width: 22ch; text-align: center; letter-spacing: -.03em; color: #f4f7fb; }
+  h2 { font-size: 44px; line-height: 1.1; font-weight: 600; max-width: 22ch; text-align: center; letter-spacing: -.02em; color: #e8edf2; }
+  .sub { font-size: 24px; color: #a5b6cd; margin-top: 20px; max-width: 36ch; text-align: center; line-height: 1.4; }
+  .accent { color: #7cc4ff; }
+  .mono { font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace; }
+  .eyebrow { text-transform: uppercase; letter-spacing: .35em; font-size: 13px; color: #6d83a3; margin-bottom: 18px; font-weight: 500; }
+
+  /* split with image */
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 5vw; width: 100%; max-width: 1500px; align-items: center; margin-top: 16px; }
+  .split.reverse { direction: rtl; }
+  .split.reverse > * { direction: ltr; }
+  .text-col { display: flex; flex-direction: column; align-items: flex-start; text-align: left; }
+  .text-col h1, .text-col h2, .text-col p { text-align: left; }
+  .img-col { border-radius: 14px; overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,.5); border: 1px solid rgba(124,196,255,.18); background: #0f1422; }
+  .img-col img { display: block; width: 100%; height: auto; }
+  .ken { animation: ken 14s ease-in-out infinite alternate; }
+  @keyframes ken { 0% { transform: scale(1); } 100% { transform: scale(1.05); } }
+
+  .stats { display: flex; gap: 32px; margin-top: 22px; flex-wrap: wrap; }
+  .stat { display: flex; flex-direction: column; align-items: center; }
+  .stat-num { font-size: 48px; font-weight: 700; color: #7cc4ff; letter-spacing: -.02em; line-height: 1; font-variant-numeric: tabular-nums; }
+  .stat-label { font-size: 11px; color: #6d83a3; margin-top: 8px; text-transform: uppercase; letter-spacing: .2em; }
+
+  .progress { position: absolute; left: 0; right: 0; top: 0; height: 3px; background: #1c2436; z-index: 10; }
+  .progress > .bar { height: 100%; background: linear-gradient(90deg, #7cc4ff, #5fd47e); width: 0%; transition: width 200ms linear; }
+  .ts { position: absolute; top: 14px; right: 24px; z-index: 10; color: #3d4d68; font-family: "JetBrains Mono", monospace; font-size: 13px; }
+  .footnote { position: absolute; bottom: 2vh; left: 0; right: 0; text-align: center; color: #3d4d68; font-size: 11px; letter-spacing: .15em; text-transform: uppercase; font-family: "JetBrains Mono", monospace; }
+
+  .fi { opacity: 0; transform: translateY(8px); animation: fi 700ms ease forwards; }
+  @keyframes fi { to { opacity: 1; transform: translateY(0); } }
+</style>
+</head>
+<body>
+
+<div class="progress"><div class="bar" id="bar"></div></div>
+<div class="ts" id="ts">00:00 / 02:00</div>
+
+<!-- p1 — INTRO 0-18s -->
+<div class="stage" data-start="0" data-end="18" id="p1">
+  <p class="eyebrow fi">Locus · Solana Frontier Hackathon · Colosseum 2026</p>
+  <h1 class="fi" style="animation-delay:.4s;">Hi, I'm <span class="accent">Andrew Young.</span></h1>
+  <p class="sub fi" style="animation-delay:2s;">Independent AI researcher · ORCID 0009-0002-3685-4289</p>
+  <p class="sub fi" style="animation-delay:6s;">For six months I've been building ARMS — a spatial memory fabric for AI systems.</p>
+  <p class="sub fi mono" style="animation-delay:11s;font-size:16px;color:#7cc4ff;">github.com/Lumi-node/ARMS · DOI on Zenodo</p>
+</div>
+
+<!-- p2 — WHAT (28s, with figure) -->
+<div class="stage" data-start="18" data-end="46" id="p2">
+  <div class="badge fi"><span class="dot-pulse"></span><span>What I built</span></div>
+  <div class="split">
+    <div class="img-col fi" style="animation-delay:.3s;">
+      <img class="ken" src="images/arms_architecture.jpg" alt="ARMS spatial memory fabric" />
+    </div>
+    <div class="text-col">
+      <h1 class="fi" style="animation-delay:.6s;font-size:56px;">Position <em class="accent">is</em> relationship.</h1>
+      <p class="sub fi" style="animation-delay:3s;text-align:left;max-width:32ch;">ARMS stores points in space — proximity defines connection. No foreign keys, no learned topology.</p>
+      <div class="stats">
+        <div class="stat fi" style="animation-delay:8s;"><div class="stat-num" data-target="100" data-suffix="%">0%</div><div class="stat-label">recall (HAT)</div></div>
+        <div class="stat fi" style="animation-delay:9s;"><div class="stat-num" data-target="70" data-suffix="×">0×</div><div class="stat-label">faster than HNSW</div></div>
+        <div class="stat fi" style="animation-delay:10s;"><div class="stat-num" data-target="11" data-suffix="M+">0M+</div><div class="stat-label">tokens of context</div></div>
+        <div class="stat fi" style="animation-delay:11s;"><div class="stat-num" data-target="0.51" data-suffix="ms" data-decimals="2">0.00ms</div><div class="stat-label">latency</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- p3 — WHY NOW (30s) -->
+<div class="stage" data-start="46" data-end="76" id="p3">
+  <div class="badge fi"><span class="dot-pulse"></span><span>Why Solana · Why now</span></div>
+  <h1 class="fi" style="animation-delay:.2s;">Solana agents need<br/><span class="accent">verifiable memory.</span></h1>
+  <p class="sub fi" style="animation-delay:3s;">The Agent Payments Protocol just launched. Agents are trading, voting, coordinating on-chain.</p>
+  <p class="sub fi" style="animation-delay:8s;">None of them have persistent, verifiable memory.<br/><span class="accent">Nobody's building the audit layer.</span></p>
+  <p class="sub fi mono" style="animation-delay:18s;color:#7cc4ff;font-size:18px;margin-top:24px;">Locus = ARMS + Solana — memory roots on-chain · cryptographic retrieval attestations · pay-per-query</p>
+</div>
+
+<!-- p4 — WHY ME (22s) -->
+<div class="stage" data-start="76" data-end="98" id="p4">
+  <div class="badge fi"><span class="dot-pulse"></span><span>Why me</span></div>
+  <h1 class="fi" style="animation-delay:.2s;">The research is <span class="accent">already real.</span></h1>
+  <div style="display:flex;gap:48px;margin-top:32px;flex-wrap:wrap;justify-content:center;">
+    <p class="sub fi" style="animation-delay:2s;max-width:18ch;text-align:center;"><span class="accent">DOI on Zenodo.</span><br/>Open-source ARMS + HAT.</p>
+    <p class="sub fi" style="animation-delay:4s;max-width:18ch;text-align:center;"><span class="accent">Models on HuggingFace.</span><br/>AutomateCapture/ARMS, AutomateCapture/HAT.</p>
+    <p class="sub fi" style="animation-delay:6s;max-width:18ch;text-align:center;"><span class="accent">Live on devnet.</span><br/>Real program, real attestations, today.</p>
+  </div>
+  <p class="sub fi" style="animation-delay:11s;margin-top:32px;">Locus is the natural deployment of that research onto Solana.</p>
+</div>
+
+<!-- p5 — ASK (22s) -->
+<div class="stage" data-start="98" data-end="120" id="p5">
+  <div class="badge fi"><span class="dot-pulse"></span><span>The Ask</span></div>
+  <h1 class="fi" style="animation-delay:.2s;">Looking for accelerator placement.</h1>
+  <p class="sub fi" style="animation-delay:3s;max-width:42ch;">Ship mainnet · onboard the first ten agent teams · build the audit layer every Solana agent will need.</p>
+  <p class="sub fi accent" style="animation-delay:9s;font-size:30px;margin-top:32px;">We're the memory primitive.</p>
+  <p class="sub fi mono" style="animation-delay:14s;font-size:18px;color:#7cc4ff;">github.com/Lumi-node/locus</p>
+  <p class="sub fi" style="animation-delay:17s;font-size:14px;color:#6d83a3;margin-top:24px;">Thank you.</p>
+</div>
+
+<div class="footnote">LOCUS · SOLANA FRONTIER HACKATHON · COLOSSEUM 2026</div>
+
+<script>
+  const stages = Array.from(document.querySelectorAll('.stage'));
+  const bar = document.getElementById('bar');
+  const ts = document.getElementById('ts');
+  const TOTAL = 120;
+  const seek = Number(new URLSearchParams(location.search).get('seek') || 0);
+  const t0 = performance.now() - seek * 1000;
+  let activated = new Set();
+  const pad = n => n.toString().padStart(2, '0');
+  const fmt = s => `${pad(Math.floor(s/60))}:${pad(Math.floor(s%60))}`;
+  function tick() {
+    const elapsed = (performance.now() - t0) / 1000;
+    bar.style.width = Math.min(100, (elapsed / TOTAL) * 100) + '%';
+    ts.textContent = `${fmt(elapsed)} / 02:00`;
+    let activeId = null;
+    for (const s of stages) {
+      const a = +s.dataset.start, b = +s.dataset.end;
+      if (elapsed >= a && elapsed < b) { activeId = s.id; break; }
+    }
+    for (const s of stages) {
+      const wasLive = s.classList.contains('live');
+      const isLive = s.id === activeId;
+      if (isLive && !wasLive) { s.classList.add('live'); onStageEnter(s); }
+      else if (!isLive && wasLive) s.classList.remove('live');
+    }
+    if (elapsed < TOTAL + 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+  function onStageEnter(stage) {
+    if (activated.has(stage.id)) return;
+    activated.add(stage.id);
+    if (stage.id === 'p2') animateCounters(stage);
+  }
+  function animateCounters(stage) {
+    const nums = stage.querySelectorAll('.stat-num');
+    nums.forEach((el, i) => {
+      const target = +el.dataset.target;
+      const suffix = el.dataset.suffix || '';
+      const decimals = +(el.dataset.decimals || 0);
+      setTimeout(() => {
+        const dur = 1400;
+        const t1 = performance.now();
+        const step = () => {
+          const k = Math.min(1, (performance.now() - t1) / dur);
+          const eased = 1 - Math.pow(1 - k, 3);
+          el.textContent = (target * eased).toFixed(decimals) + suffix;
+          if (k < 1) requestAnimationFrame(step);
+          else el.textContent = target.toFixed(decimals) + suffix;
+        };
+        requestAnimationFrame(step);
+      }, 8000 + i * 700);
+    });
+  }
+</script>
+</body>
+</html>
