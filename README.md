@@ -123,6 +123,22 @@ That last command finds the 10 most behaviorally similar Solana wallets to the o
 
 ---
 
+## Who this is for
+
+Locus is the audit layer for any AI-driven on-chain action. Four concrete users:
+
+**Trading agents.** When an autonomous agent makes a $10K on-chain decision, the `attest_retrieval` PDA records exactly which memories shaped it — query hash, result hash, memory root, version. Reconstruct decision lineage after the fact. Insurance, post-mortem, compliance.
+
+**Governance agents.** DAO votes are increasingly delegated to AI. Locus lets the delegated agent prove which historical proposals, votes, and discussions informed each new vote. Audit a governance agent the way you'd audit a human delegate.
+
+**DePIN coordinators.** Multi-agent fleets sharing operational memory across nodes need a verifiable common substrate. The on-chain Merkle root is the consistency primitive; ARMS is the geometry beneath it.
+
+**Compliance auditors and regulators.** Reading attestation PDAs is free — anyone with a Solana RPC can reconstruct the decision graph of an agent's operating history. Audit-as-a-service without trusted intermediaries.
+
+The same primitive — *memory commitments + paid attested retrievals* — powers all four.
+
+---
+
 ## Build from source
 
 Requirements (`./scripts/install-toolchain.sh` automates these on Linux — review first):
