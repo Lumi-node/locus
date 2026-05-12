@@ -2,16 +2,28 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>Locus — verifiable AI memory on Solana</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
     width: 100vw; height: 100vh; overflow: hidden;
     background: #0a0e1a; color: #e8edf2;
-    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", system-ui, sans-serif;
-    font-feature-settings: "ss01", "cv11";
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
   }
+  body::before {
+    /* slow ambient gradient */
+    content: ""; position: fixed; inset: -20%; z-index: -1;
+    background: radial-gradient(ellipse at 30% 20%, rgba(124,196,255,.08), transparent 50%),
+                radial-gradient(ellipse at 70% 80%, rgba(95,212,126,.05), transparent 50%);
+    animation: drift 30s ease-in-out infinite alternate;
+  }
+  @keyframes drift {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(40px, -30px); }
+  }
+
   .stage {
     position: absolute; inset: 0;
     display: flex; flex-direction: column;
@@ -27,96 +39,121 @@
     font-weight: 500;
   }
   h1 {
-    font-size: 88px; line-height: 1.02; font-weight: 700;
-    max-width: 16ch; text-align: center; letter-spacing: -.03em;
+    font-size: 84px; line-height: 1.02; font-weight: 700;
+    max-width: 18ch; text-align: center; letter-spacing: -.03em;
     color: #f4f7fb;
   }
   h2 {
-    font-size: 56px; line-height: 1.08; font-weight: 600;
-    max-width: 18ch; text-align: center; letter-spacing: -.02em;
+    font-size: 48px; line-height: 1.08; font-weight: 600;
+    max-width: 20ch; text-align: center; letter-spacing: -.02em;
     color: #e8edf2;
   }
-  h3 {
-    font-size: 36px; line-height: 1.2; font-weight: 600;
-    max-width: 22ch; text-align: center; letter-spacing: -.015em;
-  }
   .sub {
-    font-size: 28px; color: #a5b6cd; margin-top: 28px;
-    max-width: 28ch; text-align: center; line-height: 1.35;
+    font-size: 26px; color: #a5b6cd; margin-top: 28px;
+    max-width: 30ch; text-align: center; line-height: 1.4;
     font-weight: 400;
   }
   .accent { color: #7cc4ff; }
-  .mono {
-    font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace;
-    font-feature-settings: "calt" 0;
-  }
-  .stats {
-    display: flex; gap: 56px; margin-top: 48px;
-  }
-  .stat {
-    display: flex; flex-direction: column; align-items: center;
-  }
+  .mono { font-family: "JetBrains Mono", "SF Mono", ui-monospace, monospace; }
+
+  .stats { display: flex; gap: 64px; margin-top: 56px; }
+  .stat { display: flex; flex-direction: column; align-items: center; }
   .stat-num {
-    font-size: 64px; font-weight: 700; color: #7cc4ff;
+    font-size: 72px; font-weight: 700; color: #7cc4ff;
     letter-spacing: -.02em; line-height: 1;
+    font-variant-numeric: tabular-nums;
   }
   .stat-label {
-    font-size: 16px; color: #6d83a3; margin-top: 10px;
+    font-size: 14px; color: #6d83a3; margin-top: 12px;
     text-transform: uppercase; letter-spacing: .2em;
   }
+
   .arch {
-    display: grid; grid-template-columns: 1fr auto 1fr; gap: 32px;
+    display: grid; grid-template-columns: 1fr auto 1fr; gap: 40px;
     align-items: center; margin-top: 48px; font-family: "JetBrains Mono", monospace;
     font-size: 20px;
   }
   .arch-box {
     border: 1px solid #2a3a52; background: #111726;
-    padding: 24px 28px; border-radius: 12px;
-    text-align: center;
+    padding: 28px 32px; border-radius: 12px;
+    text-align: center; min-width: 280px;
+    opacity: 0; transform: translateY(20px);
+    animation: pop 600ms ease forwards;
   }
-  .arch-box .title { color: #7cc4ff; font-weight: 600; }
-  .arch-box .body { color: #a5b6cd; margin-top: 8px; font-size: 14px; }
-  .arrow { color: #4a5d7a; font-size: 28px; }
+  #s4.live .arch-box:nth-child(1) { animation-delay: 800ms; }
+  #s4.live .arch-box:nth-child(3) { animation-delay: 1600ms; }
+  @keyframes pop { to { opacity: 1; transform: translateY(0); } }
+  .arch-box .title { color: #7cc4ff; font-weight: 600; font-size: 22px; }
+  .arch-box .body { color: #a5b6cd; margin-top: 12px; font-size: 15px; line-height: 1.5; }
+  .arrow {
+    color: #4a5d7a; font-size: 36px; font-weight: 200;
+    opacity: 0; animation: pop 600ms ease 1200ms forwards;
+  }
 
-  /* terminal */
-  .terminal {
-    width: 80vw; max-width: 1200px;
+  /* Terminal */
+  .term-wrap {
+    width: 82vw; max-width: 1400px;
+    border-radius: 12px;
     background: #0f1422; border: 1px solid #1f2a3e;
-    border-radius: 12px; padding: 28px 32px;
-    font-family: "JetBrains Mono", ui-monospace, monospace;
-    font-size: 18px; line-height: 1.6;
-    text-align: left; min-height: 320px;
-    box-shadow: 0 25px 60px rgba(0,0,0,.4);
+    box-shadow: 0 30px 80px rgba(0,0,0,.55);
+    overflow: hidden;
   }
-  .terminal .prompt { color: #5fd47e; }
-  .terminal .cmd { color: #e8edf2; }
-  .terminal .out { color: #a5b6cd; }
-  .terminal .hl { color: #7cc4ff; }
-  .terminal .warn { color: #f4c674; }
+  .term-bar {
+    display: flex; gap: 8px; padding: 12px 18px;
+    background: #0a0e1a; border-bottom: 1px solid #1c2436;
+  }
+  .term-bar .dot { width: 12px; height: 12px; border-radius: 50%; }
+  .term-bar .r { background: #ff5f57; }
+  .term-bar .y { background: #f4be4f; }
+  .term-bar .g { background: #5fd47e; }
+  .term-bar .ttl {
+    margin-left: 18px; color: #6d83a3; font-family: "JetBrains Mono", monospace;
+    font-size: 13px;
+  }
+  .term-body {
+    padding: 24px 28px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    font-size: 17px; line-height: 1.55;
+    color: #a5b6cd;
+    min-height: 380px;
+    max-height: 60vh; overflow: hidden;
+  }
+  .term-body .prompt { color: #5fd47e; margin-right: 8px; }
+  .term-body .cmd { color: #e8edf2; }
+  .term-body .ok { color: #5fd47e; }
+  .term-body .info { color: #7cc4ff; }
+  .term-body .warn { color: #f4c674; }
+  .term-body .dim { color: #4a5d7a; }
+  .term-body .line { opacity: 0; animation: termIn 250ms ease forwards; }
+
+  @keyframes termIn { to { opacity: 1; } }
 
   /* attestation card */
-  .card {
-    width: 80vw; max-width: 1100px;
+  .att-card {
+    width: 82vw; max-width: 1300px;
     border: 1px solid #2a3a52; background: #0f1422;
-    border-radius: 14px; padding: 32px 40px; margin-top: 32px;
-    font-family: "JetBrains Mono", monospace; font-size: 16px;
+    border-radius: 14px; padding: 24px 32px; margin-top: 24px;
+    font-family: "JetBrains Mono", monospace; font-size: 15px;
+    opacity: 0; transform: translateY(10px);
+    transition: opacity 500ms ease, transform 500ms ease;
   }
-  .card .row { display: grid; grid-template-columns: 200px 1fr; gap: 16px; padding: 10px 0; }
-  .card .row + .row { border-top: 1px solid #1c2436; }
-  .card .k { color: #6d83a3; }
-  .card .v { color: #e8edf2; word-break: break-all; }
-  .card .v .lbl { color: #7cc4ff; }
+  .att-card.show { opacity: 1; transform: translateY(0); }
+  .att-card .row { display: grid; grid-template-columns: 220px 1fr; gap: 16px; padding: 8px 0; }
+  .att-card .row + .row { border-top: 1px solid #1c2436; }
+  .att-card .k { color: #6d83a3; }
+  .att-card .v { color: #e8edf2; word-break: break-all; }
+  .att-card .v .lbl { color: #7cc4ff; font-weight: 600; }
 
   .badge {
     display: inline-flex; gap: 8px; align-items: center;
     background: rgba(124,196,255,.08);
     border: 1px solid rgba(124,196,255,.25);
     color: #7cc4ff; padding: 6px 14px;
-    border-radius: 999px; font-size: 14px;
+    border-radius: 999px; font-size: 13px;
     text-transform: uppercase; letter-spacing: .14em;
     font-weight: 500; margin-bottom: 24px;
   }
-  .dot {
+  .dot-pulse {
     width: 8px; height: 8px; border-radius: 50%;
     background: #5fd47e; box-shadow: 0 0 8px #5fd47e;
     animation: pulse 1.6s ease-in-out infinite;
@@ -124,42 +161,31 @@
   @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .4; } }
 
   .footnote {
-    position: absolute; bottom: 4vh; left: 0; right: 0;
-    text-align: center; color: #3d4d68; font-size: 13px;
+    position: absolute; bottom: 3vh; left: 0; right: 0;
+    text-align: center; color: #3d4d68; font-size: 12px;
     letter-spacing: .15em; text-transform: uppercase;
     font-family: "JetBrains Mono", monospace;
   }
 
-  /* progress bar */
-  .progress {
-    position: absolute; left: 0; right: 0; top: 0; height: 3px;
-    background: #1c2436;
-  }
+  .progress { position: absolute; left: 0; right: 0; top: 0; height: 3px; background: #1c2436; z-index: 10; }
   .progress > .bar {
     height: 100%; background: linear-gradient(90deg, #7cc4ff, #5fd47e);
     width: 0%; transition: width 200ms linear;
   }
-
-  /* timestamp */
   .ts {
-    position: absolute; top: 16px; right: 24px;
+    position: absolute; top: 14px; right: 24px; z-index: 10;
     color: #3d4d68; font-family: "JetBrains Mono", monospace;
     font-size: 13px; letter-spacing: .1em;
   }
 
-  /* fade-in for text */
-  .fade-in { opacity: 0; animation: fadeIn 800ms ease forwards; }
-  .fade-in.d1 { animation-delay: 200ms; }
-  .fade-in.d2 { animation-delay: 600ms; }
-  .fade-in.d3 { animation-delay: 1100ms; }
-  .fade-in.d4 { animation-delay: 1600ms; }
-  .fade-in.d5 { animation-delay: 2100ms; }
-  @keyframes fadeIn { to { opacity: 1; } }
+  /* fade utilities — each section's child elements appear sequentially */
+  .fi { opacity: 0; transform: translateY(8px); animation: fi 700ms ease forwards; }
+  @keyframes fi { to { opacity: 1; transform: translateY(0); } }
 
-  .links { margin-top: 32px; display: flex; flex-direction: column; gap: 6px;
-    font-family: "JetBrains Mono", monospace; font-size: 15px; color: #a5b6cd; }
-  .links .k { color: #6d83a3; display: inline-block; min-width: 220px; }
-  .links .v { color: #7cc4ff; }
+  .pulse-link {
+    color: #7cc4ff;
+    text-shadow: 0 0 16px rgba(124,196,255,.4);
+  }
 </style>
 </head>
 <body>
@@ -167,120 +193,103 @@
 <div class="progress"><div class="bar" id="bar"></div></div>
 <div class="ts" id="ts">00:00 / 03:00</div>
 
-<!-- s1: PROBLEM 0:00 - 0:20 -->
+<!-- =============== s1 PROBLEM 0:00 - 0:20 =============== -->
 <div class="stage" data-start="0" data-end="20" id="s1">
-  <div class="badge"><span class="dot"></span><span>Section 1 / 6 · The Problem</span></div>
-  <h1 class="fade-in d1">Solana agents are<br/><span class="accent">stateless.</span></h1>
-  <p class="sub fade-in d2">The Agent Payments Protocol shipped this quarter. Agents are trading, voting, and coordinating on-chain.</p>
-  <p class="sub fade-in d3">None of them have persistent, verifiable, queryable memory.<br/>Every block, they start over.</p>
+  <div class="badge fi"><span class="dot-pulse"></span><span>Section 1 / 6 · The Problem</span></div>
+  <h1 class="fi" style="animation-delay:.2s;">Solana agents are<br/><span class="accent">stateless.</span></h1>
+  <p class="sub fi" style="animation-delay:1.5s;">The Agent Payments Protocol shipped this quarter. Agents are trading, voting, and coordinating on-chain.</p>
+  <p class="sub fi" style="animation-delay:8s;">None of them have persistent, verifiable, queryable memory.<br/>Every block, they start over.</p>
 </div>
 
-<!-- s2: INSIGHT 0:20 - 0:45 -->
+<!-- =============== s2 INSIGHT 0:20 - 0:45 =============== -->
 <div class="stage" data-start="20" data-end="45" id="s2">
-  <div class="badge"><span class="dot"></span><span>Section 2 / 6 · The Insight</span></div>
-  <h1 class="fade-in d1">Memory isn't a database problem.</h1>
-  <h2 class="fade-in d2" style="margin-top:32px;">It's a <span class="accent">coordinate problem.</span></h2>
-  <p class="sub fade-in d3">Things you retrieve together should live near each other in space — and that geometry should be cryptographically committable.</p>
+  <div class="badge fi"><span class="dot-pulse"></span><span>Section 2 / 6 · The Insight</span></div>
+  <h1 class="fi" style="animation-delay:.2s;">Memory isn't a<br/>database problem.</h1>
+  <h2 class="fi accent" style="animation-delay:4s;margin-top:36px;">It's a coordinate problem.</h2>
+  <p class="sub fi" style="animation-delay:9s;">Things you retrieve together should live near each other in space — and that geometry should be cryptographically committable.</p>
 </div>
 
-<!-- s3: ARMS 0:45 - 1:15 -->
+<!-- =============== s3 ARMS 0:45 - 1:15 =============== -->
 <div class="stage" data-start="45" data-end="75" id="s3">
-  <div class="badge"><span class="dot"></span><span>Section 3 / 6 · ARMS</span></div>
-  <p class="eyebrow fade-in">Attention Reasoning Memory Store</p>
-  <h1 class="fade-in d1">A spatial memory fabric<br/>for AI systems.</h1>
-  <p class="sub fade-in d2">Six months of research. Rust. Open source. Position <em>is</em> relationship.</p>
-  <div class="stats fade-in d3">
-    <div class="stat"><div class="stat-num">100%</div><div class="stat-label">recall (HAT)</div></div>
-    <div class="stat"><div class="stat-num">70×</div><div class="stat-label">faster build vs HNSW</div></div>
-    <div class="stat"><div class="stat-num">11M+</div><div class="stat-label">tokens of context</div></div>
-    <div class="stat"><div class="stat-num">0.51ms</div><div class="stat-label">retrieval latency</div></div>
+  <div class="badge fi"><span class="dot-pulse"></span><span>Section 3 / 6 · ARMS</span></div>
+  <p class="eyebrow fi" style="animation-delay:.2s;">Attention Reasoning Memory Store</p>
+  <h1 class="fi" style="animation-delay:.6s;">A spatial memory fabric<br/>for AI systems.</h1>
+  <p class="sub fi" style="animation-delay:3s;">Six months of research. Rust. Open source. <em>Position is relationship.</em></p>
+  <div class="stats">
+    <div class="stat fi" style="animation-delay:6s;"><div class="stat-num" data-target="100" data-suffix="%">0%</div><div class="stat-label">recall (HAT)</div></div>
+    <div class="stat fi" style="animation-delay:7s;"><div class="stat-num" data-target="70" data-suffix="×">0×</div><div class="stat-label">faster build vs HNSW</div></div>
+    <div class="stat fi" style="animation-delay:8s;"><div class="stat-num" data-target="11" data-suffix="M+">0M+</div><div class="stat-label">tokens of context</div></div>
+    <div class="stat fi" style="animation-delay:9s;"><div class="stat-num" data-target="0.51" data-suffix="ms" data-decimals="2">0.00ms</div><div class="stat-label">retrieval latency</div></div>
   </div>
-  <p class="sub fade-in d4" style="margin-top:40px;">DOI on Zenodo · models on HuggingFace · ORCID 0009-0002-3685-4289</p>
+  <p class="sub fi" style="animation-delay:18s;margin-top:36px;">DOI on Zenodo · models on HuggingFace · <span class="mono">ORCID 0009-0002-3685-4289</span></p>
 </div>
 
-<!-- s4: LOCUS 1:15 - 1:45 -->
+<!-- =============== s4 LOCUS 1:15 - 1:45 =============== -->
 <div class="stage" data-start="75" data-end="105" id="s4">
-  <div class="badge"><span class="dot"></span><span>Section 4 / 6 · Locus</span></div>
-  <h1 class="fade-in d1">Locus is the Solana<br/>protocol on top.</h1>
-  <div class="arch fade-in d2">
+  <div class="badge fi"><span class="dot-pulse"></span><span>Section 4 / 6 · Locus</span></div>
+  <h1 class="fi" style="animation-delay:.2s;">Locus is the Solana<br/>protocol on top.</h1>
+  <div class="arch">
     <div class="arch-box">
-      <div class="title">commit_memory</div>
+      <div class="title mono">commit_memory</div>
       <div class="body">Merkle root of ARMS<br/>state, anchored on-chain</div>
     </div>
     <div class="arrow">→</div>
     <div class="arch-box">
-      <div class="title">attest_retrieval</div>
+      <div class="title mono">attest_retrieval</div>
       <div class="body">Pay-per-query in SOL,<br/>cryptographic attestation</div>
     </div>
   </div>
-  <p class="sub fade-in d3" style="margin-top:48px;">Every AI-driven on-chain action now has an audit trail of which memories shaped it.</p>
+  <p class="sub fi" style="animation-delay:6s;margin-top:48px;">Every AI-driven on-chain action now has an audit trail of which memories shaped it.</p>
+  <p class="sub fi mono" style="animation-delay:14s;color:#6d83a3;font-size:18px;">query_hash · result_hash · memory_root · version · requester · fee</p>
 </div>
 
-<!-- s5: PROOF 1:45 - 2:30 -->
-<div class="stage" data-start="105" data-end="150" id="s5">
-  <div class="badge"><span class="dot"></span><span>Section 5 / 6 · Proof — Live on Solana Devnet</span></div>
-  <h2 class="fade-in d1">10,000 Solana wallets, behavioral similarity,<br/>cryptographically attested.</h2>
-  <div class="card fade-in d2">
-    <div class="row">
-      <div class="k">program_id</div>
-      <div class="v"><span class="lbl">C6AJ43ZpzPLtmcwDS1FQP7cQXtWHNwsLty5ijdLTxzmK</span></div>
+<!-- =============== s5 PROOF — LIVE 1:45 - 2:10 (animated terminal) =============== -->
+<!-- Section ends at 130 so Playwright can navigate to real Solscan for the back half (2:10-2:30) -->
+<div class="stage" data-start="105" data-end="130" id="s5">
+  <div class="badge fi"><span class="dot-pulse"></span><span>Section 5 / 6 · Proof — Live on Solana Devnet</span></div>
+
+  <div class="term-wrap fi" style="animation-delay:.2s;">
+    <div class="term-bar">
+      <span class="dot r"></span><span class="dot y"></span><span class="dot g"></span>
+      <span class="ttl">locus-demo @ devnet — C6AJ43Z…zmK</span>
     </div>
-    <div class="row">
-      <div class="k">commit_memory tx</div>
-      <div class="v">3EJotznRcuofQmoKy1PgDBqZZYSUywXKth6eGRQPeGxJW6ej…<span class="lbl">AywF</span></div>
-    </div>
-    <div class="row">
-      <div class="k">memory_root</div>
-      <div class="v">bd8e1419cf6699efd55d6a573f9c6a2f942a51c3c593f22e19fddf5caf8f5f16</div>
-    </div>
-    <div class="row">
-      <div class="k">attest_retrieval tx</div>
-      <div class="v">4UxWaB1TXvJdxwEfchLd7cKnAS17MhXDJ8zcfhNGzg5CLfbz…<span class="lbl">j8iX</span></div>
-    </div>
-    <div class="row">
-      <div class="k">attestation PDA</div>
-      <div class="v">9z8SwfDQRu2Nt1wbtQooLitpb3WQXge8PzxdyYebQLVt</div>
-    </div>
-    <div class="row">
-      <div class="k">query_hash</div>
-      <div class="v">d5d98ebe29342856fb0f3e6d6412f219122e825b0f8b6164c85b72234587946f</div>
-    </div>
-    <div class="row">
-      <div class="k">result_hash</div>
-      <div class="v">4553cb46fa3ec8d8aed75376d154667094cebce6e5c1ce2a3b76ac495cdd11b6</div>
-    </div>
+    <div class="term-body" id="terminal"></div>
   </div>
-  <p class="sub fade-in d4" style="margin-top:24px;">Query hash + result hash + memory root + version. Every retrieval, an audit trail.</p>
 </div>
 
-<!-- s6: VISION 2:30 - 3:00 -->
+<!-- =============== s6 VISION + ASK 2:30 - 3:00 =============== -->
 <div class="stage" data-start="150" data-end="180" id="s6">
-  <div class="badge"><span class="dot"></span><span>Section 6 / 6 · Vision + Ask</span></div>
-  <h1 class="fade-in d1">Every Solana agent<br/>needs memory.</h1>
-  <h2 class="fade-in d2" style="margin-top:32px;">We're the <span class="accent">primitive.</span></h2>
-  <p class="sub fade-in d3" style="margin-top:32px;max-width:38ch;">
+  <div class="badge fi"><span class="dot-pulse"></span><span>Section 6 / 6 · Vision + Ask</span></div>
+  <h1 class="fi" style="animation-delay:.2s;">Every Solana agent<br/>needs memory.</h1>
+  <h2 class="fi" style="animation-delay:3s;margin-top:32px;">We're the <span class="accent">primitive.</span></h2>
+  <p class="sub fi" style="animation-delay:9s;max-width:42ch;">
     Wallet similarity today · agent persistence tomorrow ·<br/>
-    governance reasoning + autonomous trading audit, after.
+    governance reasoning + autonomous-trading audit, after.
   </p>
-  <p class="sub fade-in d4" style="margin-top:40px;color:#7cc4ff;">
+  <p class="sub fi accent" style="animation-delay:18s;margin-top:36px;">
     Looking for accelerator placement to ship mainnet<br/>and onboard the first ten agent teams.
   </p>
-  <p class="sub fade-in d5" style="margin-top:32px;font-family:'JetBrains Mono',monospace;font-size:18px;color:#3d4d68;">
-    github.com/Lumi-node/locus
-  </p>
+  <p class="sub fi mono" style="animation-delay:24s;font-size:18px;color:#7cc4ff;">github.com/Lumi-node/locus</p>
 </div>
 
 <div class="footnote">LOCUS · SOLANA FRONTIER HACKATHON · COLOSSEUM 2026</div>
 
 <script>
+  // ----------------------------------------------------------------------
+  // Top-level timeline
+  // ----------------------------------------------------------------------
   const stages = Array.from(document.querySelectorAll('.stage'));
   const bar = document.getElementById('bar');
   const ts = document.getElementById('ts');
-  const TOTAL = 180; // seconds
-  const t0 = performance.now();
+  const TOTAL = 180;
+  // ?seek=N offsets t0 backwards so the auto-advance starts at second N.
+  // Used when Playwright navigates away (to real Solscan) then back to resume.
+  const seek = Number(new URLSearchParams(location.search).get('seek') || 0);
+  const t0 = performance.now() - seek * 1000;
+  let activated = new Set();
 
-  function pad(n) { return n.toString().padStart(2, '0'); }
-  function fmt(sec) { return `${pad(Math.floor(sec/60))}:${pad(Math.floor(sec%60))}`; }
+  const pad = n => n.toString().padStart(2, '0');
+  const fmt = s => `${pad(Math.floor(s/60))}:${pad(Math.floor(s%60))}`;
 
   function tick() {
     const elapsed = (performance.now() - t0) / 1000;
@@ -289,17 +298,133 @@
 
     let activeId = null;
     for (const s of stages) {
-      const a = Number(s.dataset.start);
-      const b = Number(s.dataset.end);
+      const a = +s.dataset.start, b = +s.dataset.end;
       if (elapsed >= a && elapsed < b) { activeId = s.id; break; }
     }
     for (const s of stages) {
-      if (s.id === activeId) s.classList.add('live');
-      else s.classList.remove('live');
+      const wasLive = s.classList.contains('live');
+      const isLive = s.id === activeId;
+      if (isLive && !wasLive) {
+        s.classList.add('live');
+        onStageEnter(s, elapsed);
+      } else if (!isLive && wasLive) {
+        s.classList.remove('live');
+      }
     }
     if (elapsed < TOTAL + 1) requestAnimationFrame(tick);
   }
   requestAnimationFrame(tick);
+
+  function onStageEnter(stage, elapsedAtEntry) {
+    if (activated.has(stage.id)) return;
+    activated.add(stage.id);
+    if (stage.id === 's3') animateCounters(stage);
+    if (stage.id === 's5') runTerminal();
+  }
+
+  // ----------------------------------------------------------------------
+  // s3 — count-up stat numbers
+  // ----------------------------------------------------------------------
+  function animateCounters(stage) {
+    const nums = stage.querySelectorAll('.stat-num');
+    nums.forEach((el, i) => {
+      const target = +el.dataset.target;
+      const suffix = el.dataset.suffix || '';
+      const decimals = +(el.dataset.decimals || 0);
+      // start animation 6.5s into the section so it aligns with stat-card fade-in
+      const startDelay = 6000 + i * 700;
+      setTimeout(() => {
+        const dur = 1400;
+        const t1 = performance.now();
+        const step = () => {
+          const k = Math.min(1, (performance.now() - t1) / dur);
+          const eased = 1 - Math.pow(1 - k, 3);
+          const v = (target * eased).toFixed(decimals);
+          el.textContent = v + suffix;
+          if (k < 1) requestAnimationFrame(step);
+          else el.textContent = target.toFixed(decimals) + suffix;
+        };
+        requestAnimationFrame(step);
+      }, startDelay);
+    });
+  }
+
+  // ----------------------------------------------------------------------
+  // s5 — animated terminal playback
+  // ----------------------------------------------------------------------
+  function runTerminal() {
+    const term = document.getElementById('terminal');
+    const card = document.getElementById('attCard');
+    if (!term) return;
+
+    // Timeline (relative to stage entry). Section is ~25s long; remaining
+    // 20s of the proof block is real Solscan footage (Playwright navigates away).
+    const timeline = [
+      { at: 200,  type: 'prompt' },
+      { at: 200,  type: 'type', cls: 'cmd', text: 'cargo run -p locus-demo -- similar --wallet 1tjoQzWg21…7km --k 5', dur: 1500 },
+      { at: 2000, type: 'line', cls: 'info', text: 'INFO  locus_demo::query: looking up embedding from ARMS' },
+      { at: 2500, type: 'line', cls: 'dim',  text: '' },
+      { at: 2700, type: 'line', cls: 'ok',   text: '=== top 5 behaviorally similar wallets to 1tjoQzWg21…7km ===' },
+      { at: 3900, type: 'line', cls: 'cmd',  text: '   1. 1tjoQzWg21…7km   dist=0.0000   bubblegum + compressed NFT mint' },
+      { at: 4900, type: 'line', cls: 'cmd',  text: '   2. AGkGWK1R6…L9kn   dist=0.8792   bubblegum + transfers' },
+      { at: 5900, type: 'line', cls: 'cmd',  text: '   3. 5oNhn2ESF…mGTF   dist=0.9779   bubblegum + transfers' },
+      { at: 6900, type: 'line', cls: 'cmd',  text: '   4. 5SybwTvGn…T8ey   dist=1.1390   high-volume transfers' },
+      { at: 7900, type: 'line', cls: 'cmd',  text: '   5. 9xSi6onCq…KL6v   dist=1.1918   compressed NFT mint heavy' },
+      { at: 9500, type: 'line', cls: 'dim',  text: '' },
+      { at: 9700, type: 'line', cls: 'ok',   text: '=== on-chain attestation ===' },
+      { at: 10700, type: 'line', cls: 'info', text: '  signature  : 4UxWaB1TXvJdxwEfchLd7cKnAS17MhXDJ8zcfhNGzg5CLfbz…j8iX' },
+      { at: 11500, type: 'line', cls: 'info', text: '  pda        : 9z8SwfDQRu2Nt1wbtQooLitpb3WQXge8PzxdyYebQLVt' },
+      { at: 12300, type: 'line', cls: 'info', text: '  query_hash : d5d98ebe29342856fb0f3e6d6412f219122e825b0f8b6164c85b72234587946f' },
+      { at: 13100, type: 'line', cls: 'info', text: '  result_hash: 4553cb46fa3ec8d8aed75376d154667094cebce6e5c1ce2a3b76ac495cdd11b6' },
+      { at: 13900, type: 'line', cls: 'info', text: '  version    : 1   nonce: 16070694091605954182' },
+      { at: 14700, type: 'line', cls: 'dim',  text: '' },
+      { at: 15000, type: 'line', cls: 'ok',   text: '  → opening Solscan' },
+    ];
+
+    let cursorLine = null;
+
+    for (const ev of timeline) {
+      setTimeout(() => {
+        switch (ev.type) {
+          case 'prompt': {
+            const ln = document.createElement('div');
+            ln.className = 'line';
+            ln.innerHTML = '<span class="prompt">$</span><span class="cmd"></span>';
+            term.appendChild(ln);
+            cursorLine = ln.querySelector('.cmd');
+            scroll(term);
+            break;
+          }
+          case 'type': {
+            if (!cursorLine) return;
+            const chars = ev.text.split('');
+            const per = ev.dur / chars.length;
+            chars.forEach((ch, i) => setTimeout(() => {
+              cursorLine.textContent += ch;
+              scroll(term);
+            }, i * per));
+            break;
+          }
+          case 'line': {
+            const ln = document.createElement('div');
+            ln.className = 'line ' + (ev.cls || '');
+            ln.textContent = ev.text;
+            term.appendChild(ln);
+            scroll(term);
+            break;
+          }
+          case 'card': {
+            card.classList.add('show');
+            break;
+          }
+        }
+      }, ev.at);
+    }
+  }
+
+  function scroll(el) {
+    el.scrollTop = el.scrollHeight;
+  }
 </script>
 </body>
 </html>

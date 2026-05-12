@@ -37,7 +37,7 @@
       "start_sec": 105,
       "duration_sec": 45,
       "title": "Proof",
-      "text": "I embedded a sample of Solana wallets into ARMS using behavioral features — program interactions, token holdings, transaction patterns. You can query for wallets similar to any address, and every query produces a live on-chain attestation: the agent that owns the memory, the requester who paid the fee, the cryptographic hashes of the query and the result. This is on Solana devnet right now. Every link in the README opens a real Solscan account or transaction."
+      "text": "Here's a live similarity query against eight Solana wallets I've embedded into ARMS. The top neighbors are all bubblegum compressed-NFT users — the same behavioral pattern as the query wallet. Below the results, the on-chain attestation: query hash, result hash, memory root, version, signature, and the PDA. Now I'm opening that same transaction on Solscan, on Solana devnet, live right now. This is the real decoded RetrievalAttestation account, on-chain, every field readable, every byte verifiable."
     },
     {
       "id": "s6",
