@@ -30,14 +30,16 @@ echo ">> audio : $AUDIO"
 echo ">> out   : $OUT"
 
 # Re-encode video to H.264, mux narration as the audio track, end at shortest stream.
+# Audio is forced to 48kHz stereo so it plays in every browser / mobile / VLC.
 ffmpeg -y \
   -i "$WEBM" \
   -i "$AUDIO" \
   -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p \
-  -c:a aac -b:a 192k \
+  -c:a aac -b:a 192k -ar 48000 -ac 2 -profile:a aac_low \
   -map 0:v:0 -map 1:a:0 \
   -shortest \
   -movflags +faststart \
+  -metadata title="Locus — verifiable AI memory on Solana" \
   "$OUT" 2>&1 | tail -8
 
 echo
